@@ -1,0 +1,20 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="SSBasedInspection" enabled="true" level="INFORMATION" enabled_by_default="true">
+      <replaceConfiguration name="Convert to arrow function" text="function $functionName$ ($parameterNames$) {&#10;  $content$&#10;}" recursive="false" caseInsensitive="true" type="JavaScript" reformatAccordingToStyle="false" shortenFQN="false" replacement="const $functionName$ = ($parameterNames$) =&gt; {&#10;  $content$&#10;};">
+        <constraint name="__context__" within="" contains="" />
+        <constraint name="functionName" minCount="0" maxCount="2147483647" within="" contains="" />
+        <constraint name="parameterNames" minCount="0" maxCount="2147483647" within="" contains="" />
+        <constraint name="content" maxCount="2147483647" within="" contains="" />
+      </replaceConfiguration>
+      <replaceConfiguration name="Convert to arrow function2" text="function $functionName$ ($parameterNames$) {&#10;  $content$&#10;}" recursive="false" caseInsensitive="true" type="JavaScript" reformatAccordingToStyle="false" shortenFQN="false" replacement="const $functionName$ = ($parameterNames$) =&gt; $content$;">
+        <constraint name="__context__" within="" contains="" />
+        <constraint name="functionName" within="" contains="" />
+        <constraint name="parameterNames" minCount="0" maxCount="2147483647" within="" contains="" />
+        <constraint name="content" within="" contains="" />
+      </replaceConfiguration>
+    </inspection_tool>
+  </profile>
+</component>

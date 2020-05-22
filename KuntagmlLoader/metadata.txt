@@ -1,0 +1,16 @@
+[general]
+name=Kuntagml loader
+description=Plugin to load KuntaGML files to QGIS
+about=This plugin is ment to load KuntaGML complex feature files to QGIS
+version=0.0.1
+qgisMinimumVersion=3.0
+author=Gispo Ltd.
+email=joona@gispo.fi
+#changelog=
+tags=python, KuntaGML, GML, complex
+repository=TODO-add-repo-here
+homepage=TODO-add-repo-here
+tracker=TODO-add-repo-here
+category=Plugins
+experimental=True
+deprecated=False
