@@ -4,8 +4,13 @@ import os.path
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+from qgis.core import QgsProject
 
+from .core.kuntagml2layers import KuntaGML2Layers
+from .core.utils import logger
+from .gui.loader_dialog import LoaderDialog
 from .gui.loader_dockwidget import LoaderDockwidget
+
 
 # Initialize Qt resources from file resources.py
 # Import the code for the dialog
@@ -69,7 +74,7 @@ class KuntagmlLoader:
         callback,
         enabled_flag=True,
         add_to_menu=True,
-        add_to_toolbar=True,
+        add_to_toolbar=False,
         status_tip=None,
         whats_this=None,
         parent=None):
@@ -174,6 +179,33 @@ class KuntagmlLoader:
             self.iface.removeToolBarIcon(action)
 
     def run(self):
+        """Run method that performs all the real work"""
+
+        # Create the dialog with elements (after translation) and keep reference
+        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        if self.first_start == True:
+            self.first_start = False
+            self.dlg = LoaderDialog()
+
+        # show the dialog
+        self.dlg.show()
+        # Run the dialog event loop
+        result = self.dlg.exec_()
+        # See if OK was pressed
+        if result:
+            # Do something useful here - delete the line containing pass and
+            # substitute with your code.
+            wfs = self.dlg.wfsPathLineEdit.text()
+            f_type = self.dlg.lineEditFtype.text()
+            logger.info(wfs)
+            logger.info(f_type)
+            converter = KuntaGML2Layers(wfs, '2.1.6', '2.1.1', '1.1.0')
+            converter.populate_features()
+            layers = converter.convert_feature_types([f_type])
+            if len(layers):
+                QgsProject.instance().addMapLayers(layers[f_type])
+
+    def run_for_widget(self):
         """Run method that performs all the real work"""
         if not self.pluginIsActive:
             self.pluginIsActive = True
