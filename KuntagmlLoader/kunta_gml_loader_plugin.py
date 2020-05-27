@@ -6,8 +6,6 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsProject
 
-from .core.kuntagml2layers import KuntaGML2Layers
-from .core.utils import logger
 from .gui.loader_dialog import LoaderDialog
 from .gui.loader_dockwidget import LoaderDockwidget
 
@@ -193,17 +191,12 @@ class KuntagmlLoader:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            wfs = self.dlg.wfsPathLineEdit.text()
-            f_type = self.dlg.lineEditFtype.text()
-            logger.info(wfs)
-            logger.info(f_type)
-            converter = KuntaGML2Layers(wfs, '2.1.6', '2.1.1', '1.1.0')
-            converter.populate_features()
-            layers = converter.convert_feature_types([f_type])
-            if len(layers):
-                QgsProject.instance().addMapLayers(layers[f_type])
+            if self.dlg.converter is not None:
+                f_types = self.dlg.get_feature_types()
+                layers = self.dlg.converter.convert_feature_types(f_types)
+                for f_type, lyrs in layers.items():
+                    if len(lyrs):
+                        QgsProject.instance().addMapLayers(lyrs)
 
     def run_for_widget(self):
         """Run method that performs all the real work"""
