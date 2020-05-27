@@ -51,7 +51,7 @@ UI_FILES := $(UI)
 
 EXTRAS = metadata.txt icon.png
 
-EXTRA_DIRS =
+EXTRA_DIRS = data
 
 COMPILED_RESOURCE_FILES = resources.py
 
