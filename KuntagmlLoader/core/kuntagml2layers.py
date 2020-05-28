@@ -1,6 +1,5 @@
 import os
 import re
-import tempfile
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 
@@ -41,19 +40,16 @@ class KuntaGML2Layers:
     def data_dir(self):
         return os.path.join(DATA_DIR, self.domain)
 
-    def populate_features(self):
-        capabilities_file = tempfile.NamedTemporaryFile(suffix='.xml')
-        try:
-            with open(capabilities_file.name, "w") as f:
-                content = fetch(f'{self.url}?request=GetCapabilities&service=WFS&version={self.version_wfs}')
-                f.write(content)
-            d = ET.parse(capabilities_file.name)
-            r = d.getroot()
-            feature_types = r.findall('{%s}FeatureTypeList' % WFS_NAMESPACE)[0].findall(
-                '{%s}FeatureType' % WFS_NAMESPACE)
-            self.feature_types = [f_type.find('{%s}Name' % WFS_NAMESPACE).text for f_type in feature_types]
-        finally:
-            capabilities_file.close()
+    def populate_features(self) -> None:
+        """
+        Populate feature types based on capabilities document
+        """
+        content = fetch(f'{self.url}?request=GetCapabilities&service=WFS&version={self.version_wfs}')
+        d = ET.ElementTree(ET.fromstring(content))
+        r = d.getroot()
+        feature_types = r.findall('{%s}FeatureTypeList' % WFS_NAMESPACE)[0].findall(
+            '{%s}FeatureType' % WFS_NAMESPACE)
+        self.feature_types = [f_type.find('{%s}Name' % WFS_NAMESPACE).text for f_type in feature_types]
 
     def convert_feature_types(self, feature_types: [str]) -> {str: [QgsVectorLayer]}:
         """
