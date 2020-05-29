@@ -45,3 +45,10 @@ class LoaderDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def get_feature_types(self):
         return [item.text() for item in self.listWidget.selectedItems()]
+
+    def get_max_features(self):
+        txt = self.maxFeaturesLineEdit.text()
+        try:
+            return int(txt)
+        except ValueError:
+            return 100

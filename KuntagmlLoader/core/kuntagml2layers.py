@@ -51,10 +51,11 @@ class KuntaGML2Layers:
             '{%s}FeatureType' % WFS_NAMESPACE)
         self.feature_types = [f_type.find('{%s}Name' % WFS_NAMESPACE).text for f_type in feature_types]
 
-    def convert_feature_types(self, feature_types: [str]) -> {str: [QgsVectorLayer]}:
+    def convert_feature_types(self, feature_types: [str], max_features=100) -> {str: [QgsVectorLayer]}:
         """
 
         :param feature_types:
+        :param max_features:
         :return:
         """
 
@@ -63,15 +64,16 @@ class KuntaGML2Layers:
             os.mkdir(self.data_dir)
         layers = {}
         for f_type in types:
-            layers[f_type] = self.convert_feature_type(f_type)
+            layers[f_type] = self.convert_feature_type(f_type, max_features)
 
         return layers
 
-    def convert_feature_type(self, feature_type: str):
+    def convert_feature_type(self, feature_type: str, max_features: int):
         layers = []
 
         try:
-            url = f'{self.url}?request=GetFeature&service=WFS&srsName={self.srs}&typeName={feature_type}&version={self.version_wfs}'
+            max_fs = f'maxFeatures={max_features}' if int(self.version_wfs[0]) < 2 else f'count={max_features}'
+            url = f'{self.url}?request=GetFeature&service=WFS&srsName={self.srs}&typeName={feature_type}&version={self.version_wfs}&{max_fs}'
             content = fetch(url)
             content = self._fix_schemalocations(content)
             gml = os.path.join(self.data_dir, f'{feature_type.replace(":", "_")}.gml')
@@ -119,7 +121,7 @@ class KuntaGML2Layers:
             raise KuntaGMLInvalidContentException(
                 tr("Could not parse gml content: invalid occurences of schemalocations:"),
                 len(schemalocations))
-        original_locations = KuntaGML2Layers.filter_schemalocations(schemalocations)
+        original_locations = KuntaGML2Layers._filter_schemalocations(schemalocations)
 
         new_locations = original_locations + " " + "\n".join(
             [location for key, location in INITIAL_SCHEMAS.items() if key in content])
@@ -133,7 +135,7 @@ class KuntaGML2Layers:
         return content
 
     @staticmethod
-    def filter_schemalocations(schemalocations):
+    def _filter_schemalocations(schemalocations):
         original_locations = schemalocations[0]
         parts = original_locations.split()
         filtered_locations = []

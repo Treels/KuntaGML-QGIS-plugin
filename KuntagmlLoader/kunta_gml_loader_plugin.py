@@ -193,7 +193,7 @@ class KuntagmlLoader:
         if result:
             if self.dlg.converter is not None:
                 f_types = self.dlg.get_feature_types()
-                layers = self.dlg.converter.convert_feature_types(f_types)
+                layers = self.dlg.converter.convert_feature_types(f_types, self.dlg.get_max_features())
                 for f_type, lyrs in layers.items():
                     if len(lyrs):
                         QgsProject.instance().addMapLayers(lyrs)
