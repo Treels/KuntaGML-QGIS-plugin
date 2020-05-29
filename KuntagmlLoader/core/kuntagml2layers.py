@@ -71,7 +71,7 @@ class KuntaGML2Layers:
         layers = []
 
         try:
-            url = f'{self.url}?request=GetFeature&service=WFS&srs={self.srs}&typeName={feature_type}&version={self.version_wfs}'
+            url = f'{self.url}?request=GetFeature&service=WFS&srsName={self.srs}&typeName={feature_type}&version={self.version_wfs}'
             content = fetch(url)
             content = self._fix_schemalocations(content)
             gml = os.path.join(self.data_dir, f'{feature_type.replace(":", "_")}.gml')
