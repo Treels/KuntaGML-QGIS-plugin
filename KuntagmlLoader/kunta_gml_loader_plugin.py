@@ -11,6 +11,7 @@ from .gui.loader_dockwidget import LoaderDockwidget
 
 
 # Initialize Qt resources from file resources.py
+from .resources import *
 # Import the code for the dialog
 
 

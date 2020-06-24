@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QSettings, QUrl
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
-from qgis._core import Qgis, QgsBlockingNetworkRequest
+from qgis.core import Qgis, QgsBlockingNetworkRequest
 
 from . import logger
 from .constants import KuntaGMLNetworkException, ENCODING
