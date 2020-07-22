@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-import os
+import logging
 
 from PyQt5.QtCore import pyqtSlot, Qt
 from qgis.PyQt import QtWidgets
-from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QListWidgetItem
 
 from ..core.kuntagml2layers import KuntaGML2Layers
-from ..core.utils import logger
-
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'kunta_gml_loader_dialog.ui'))
+from ..qgis_plugin_tools.tools.resources import load_ui, plugin_name
+
+FORM_CLASS = load_ui('kunta_gml_loader_dialog.ui')
+
+LOGGER = logging.getLogger(plugin_name())
 
 
 class LoaderDialog(QtWidgets.QDialog, FORM_CLASS):
@@ -31,7 +31,7 @@ class LoaderDialog(QtWidgets.QDialog, FORM_CLASS):
 
     @pyqtSlot()
     def on_loadTypesPushButton_clicked(self):
-        logger.info("CLicked")
+        LOGGER.info("CLicked")
         self.listWidget.clear()
 
         wfs = self.wfsPathLineEdit.text()

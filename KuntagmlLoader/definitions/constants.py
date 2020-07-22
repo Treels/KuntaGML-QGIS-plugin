@@ -1,17 +1,12 @@
-import os
 from enum import Enum
+
+from ..qgis_plugin_tools.tools.resources import resources_path
 
 
 class ServiceProvider(Enum):
     """Service provider of the schema """
     kuntatietopalvelu = 'http://www.kuntatietopalvelu.fi'
     paikkatietopalvelu = 'http://www.paikkatietopalvelu.fi'
-
-class KuntaGMLNetworkException(Exception):
-    """ Network Exception"""
-
-class KuntaGMLInvalidContentException(Exception):
-    """ Plugin is not able to parse"""
 
 
 ENCODING = "utf-8"
@@ -24,4 +19,4 @@ INITIAL_SCHEMAS = {
     'gml/rakennusvalvonta': 'http://www.paikkatietopalvelu.fi/gml/rakennusvalvonta http://s3.eu-central-1.amazonaws.com/gispogdalkuntagml/rakennusvalvonta_2.2.0.xsd'
 }
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
+DATA_DIR = resources_path('data')

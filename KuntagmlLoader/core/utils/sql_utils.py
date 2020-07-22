@@ -1,7 +1,10 @@
+import logging
 import sqlite3
 
-from . import logger
-from .utils import tr
+from ...qgis_plugin_tools.tools.i18n import tr
+from ...qgis_plugin_tools.tools.resources import plugin_name
+
+LOGGER = logging.getLogger(plugin_name())
 
 TABLES_TO_IGNORE = {
     'spatial_ref_sys',
@@ -56,7 +59,7 @@ class SQLTable:
             return ''
 
     @property
-    def uri(self):
+    def uri(self) -> str:
         uri = f'dbname=\'{self.database}\' table="{self.table}"'
         uri += f' ({self.geom_col})' if self.has_geom() else ''
         return uri
@@ -71,7 +74,7 @@ def get_non_empty_tables(database: str) -> [SQLTable]:
     :param database:
     :return:
     """
-    logger.debug(f'Opening db: {database}')
+    LOGGER.debug(f'Opening db: {database}')
     con = sqlite3.connect(database)
     tables = []
     try:
@@ -99,9 +102,8 @@ def get_non_empty_tables(database: str) -> [SQLTable]:
                             continue
                     tables.append(SQLTable(database, table, geom_def[0], geom_def[1]))
 
-
     except Exception as error:
-        logger.exception(tr("Error occurred during database parsing"), error)
+        LOGGER.exception(tr("Error occurred during database parsing"), error)
         tables = []
     finally:
         con.close()

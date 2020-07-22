@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import xml.etree.ElementTree as ET
@@ -6,12 +7,14 @@ from urllib.parse import urlparse
 from osgeo import gdal
 from qgis.core import QgsVectorLayer
 
-from .utils import logger
-from .utils.constants import (ServiceProvider, KuntaGMLInvalidContentException,
-                              WFS_NAMESPACE, INITIAL_SCHEMAS, DATA_DIR)
-from .utils.network import fetch
+from .exceptions import KuntaGMLInvalidContentException
 from .utils.sql_utils import get_non_empty_tables
-from .utils.utils import tr
+from ..definitions.constants import (ServiceProvider, WFS_NAMESPACE, INITIAL_SCHEMAS, DATA_DIR)
+from ..qgis_plugin_tools.tools.i18n import tr
+from ..qgis_plugin_tools.tools.network import fetch
+from ..qgis_plugin_tools.tools.resources import plugin_name
+
+LOGGER = logging.getLogger(plugin_name())
 
 
 class KuntaGML2Layers:
@@ -88,7 +91,7 @@ class KuntaGML2Layers:
                     if layer.isValid():
                         layers.append(layer)
         except Exception as error:
-            logger.exception(tr("Uncaught error occurred"), error)
+            LOGGER.exception(tr("Uncaught error occurred"), error)
         finally:
             return layers
 
@@ -109,7 +112,7 @@ class KuntaGML2Layers:
                 options='-f SQLite -dsco SPATIALITE=YES ' + ' '.join(ogr2ogr_convert_params)
             )
         except Exception as error:
-            logger.warning(tr("Could not create spatialite database"), error)
+            LOGGER.warning(tr("Could not create spatialite database"), error)
             return False
 
         return True
@@ -125,7 +128,7 @@ class KuntaGML2Layers:
 
         new_locations = original_locations + " " + "\n".join(
             [location for key, location in INITIAL_SCHEMAS.items() if key in content])
-        logger.info(new_locations)
+        LOGGER.info(new_locations)
         print(ServiceProvider.paikkatietopalvelu.value)
         content = (content
                    .replace(schemalocations[0], new_locations)

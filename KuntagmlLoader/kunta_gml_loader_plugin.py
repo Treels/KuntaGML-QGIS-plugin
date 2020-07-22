@@ -9,9 +9,13 @@ from qgis.core import QgsProject
 from .gui.loader_dialog import LoaderDialog
 from .gui.loader_dockwidget import LoaderDockwidget
 
-
 # Initialize Qt resources from file resources.py
+from .qgis_plugin_tools.tools.custom_logging import setup_logger
+from .qgis_plugin_tools.tools.i18n import setup_translation
+from .qgis_plugin_tools.tools.resources import plugin_name
 from .resources import *
+
+
 # Import the code for the dialog
 
 
@@ -28,19 +32,18 @@ class KuntagmlLoader:
         """
         # Save reference to the QGIS interface
         self.iface = iface
-        # initialize plugin directory
-        self.plugin_dir = os.path.dirname(__file__)
-        # initialize locale
-        locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(
-            self.plugin_dir,
-            'i18n',
-            'KuntagmlLoader_{}.qm'.format(locale))
 
-        if os.path.exists(locale_path):
+        setup_logger(plugin_name(), iface)
+
+        # initialize locale
+        locale, file_path = setup_translation()
+        if file_path:
             self.translator = QTranslator()
-            self.translator.load(locale_path)
+            self.translator.load(file_path)
+            # noinspection PyCallByClass
             QCoreApplication.installTranslator(self.translator)
+        else:
+            pass
 
         # Declare instance attributes
         self.actions = []
