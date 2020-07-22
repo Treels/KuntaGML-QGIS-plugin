@@ -138,7 +138,7 @@ class KuntaGML2Layers:
         return content
 
     @staticmethod
-    def _filter_schemalocations(schemalocations):
+    def _filter_schemalocations(schemalocations: [str]) -> [str]:
         original_locations = schemalocations[0]
         parts = original_locations.split()
         filtered_locations = []
