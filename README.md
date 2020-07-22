@@ -1,5 +1,7 @@
 KuntaGML QGIS Plugin
 ===================
+![](https://github.com/GispoCoding/KuntaGML-QGIS-plugin/workflows/Tests/badge.svg)
+
 
 This project uses [qgis_plugin_tools](https://github.com/GispoCoding/qgis_plugin_tools) submodule, so when cloning 
 use `--recurse-submodules` like so:
