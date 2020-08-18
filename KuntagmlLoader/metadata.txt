@@ -7,6 +7,8 @@ qgisMinimumVersion=3.0
 author=Gispo Ltd.
 email=joona@gispo.fi
 changelog=
+ Version 0.0.1:
+ * Initial release
 tags=python, KuntaGML, GML, complex
 repository=https://github.com/GispoCoding/KuntaGML-QGIS-plugin
 homepage=https://github.com/GispoCoding/KuntaGML-QGIS-plugin
