@@ -1,6 +1,7 @@
 KuntaGML QGIS Plugin
 ===================
 ![](https://github.com/GispoCoding/KuntaGML-QGIS-plugin/workflows/Tests/badge.svg)
+![](https://github.com/GispoCoding/KuntaGML-QGIS-plugin/workflows/Release/badge.svg)
 
 
 ## Installation instructions
