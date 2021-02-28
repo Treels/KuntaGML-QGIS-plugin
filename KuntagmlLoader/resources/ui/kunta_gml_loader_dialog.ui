@@ -7,13 +7,36 @@
     <x>0</x>
     <y>0</y>
     <width>613</width>
-    <height>460</height>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QgsCollapsibleGroupBox" name="mGroupBox_2">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="leftMargin">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="loadWFSPushButton">
+        <property name="text">
+         <string>Fill WFS url from Data Sources</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="listLoadWFSWidget">
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
@@ -99,6 +122,9 @@
    <item>
     <widget class="QgsCollapsibleGroupBox" name="mGroupBox">
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="leftMargin">
+       <number>12</number>
+      </property>
       <item>
        <widget class="QPushButton" name="loadTypesPushButton">
         <property name="text">
@@ -107,7 +133,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QListWidget" name="listWidget">
+       <widget class="QListWidget" name="listLoadTypesWidget">
         <property name="selectionMode">
          <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>

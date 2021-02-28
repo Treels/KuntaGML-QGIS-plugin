@@ -25,7 +25,7 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtWidgets import QListWidgetItem
 
-from ..core.kuntagml2layers import KuntaGML2Layers
+from ..core.kuntagml2layers import KuntaGML2Layers, LoadFromSettings
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 from ..qgis_plugin_tools.tools.resources import load_ui, plugin_name
 
@@ -43,28 +43,54 @@ class LoaderDialog(QtWidgets.QDialog, FORM_CLASS):
         super(LoaderDialog, self).__init__(parent)
 
         self.setupUi(self)
+        self.loaded_settings = None
 
         self.converter = None
+
+        self.listLoadWFSWidget.itemSelectionChanged.connect(
+            self.on_listLoadWFSWidget_item_clicked
+        )
+
+    @pyqtSlot()
+    def on_loadWFSPushButton_clicked(self):
+        LOGGER.info("Clicked loadWFSPushButton")
+        self.loaded_settings = LoadFromSettings()
+        self.listLoadWFSWidget.clear()
+        for key in self.loaded_settings.wfs_urls.keys():
+            item = QListWidgetItem(key)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            self.listLoadWFSWidget.addItem(key)
+
+    @pyqtSlot()
+    def on_listLoadWFSWidget_item_clicked(self):
+        LOGGER.info("Clicked listLoadWFSWidget item")
+        self.wfsPathLineEdit.clear()
+        for item in self.listLoadWFSWidget.selectedItems():
+            self.wfsPathLineEdit.clear()
+            self.wfsPathLineEdit.setText(
+                self.loaded_settings.wfs_urls[item.text()]
+            )
+            self.loaded_settings.load_authcfg_id(item.text())
 
     def get_converter(self):
         return self.converter
 
     @pyqtSlot()
     def on_loadTypesPushButton_clicked(self):
-        LOGGER.info("CLicked")
-        self.listWidget.clear()
+        LOGGER.info("Clicked loadTypesPushButton")
+        self.listLoadTypesWidget.clear()
 
         wfs = self.wfsPathLineEdit.text()
-        self.converter = KuntaGML2Layers(wfs, '2.1.6', '2.1.1', '1.1.0')
+        self.converter = KuntaGML2Layers(wfs, '2.1.6', '2.1.1', '1.1.0', authcfg_id=self.loaded_settings.authcfg_id)
         self.converter.populate_features()
 
         for f_type in self.converter.feature_types:
             item = QListWidgetItem(f_type)
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            self.listWidget.addItem(item)
+            self.listLoadTypesWidget.addItem(item)
 
     def get_feature_types(self):
-        return [item.text() for item in self.listWidget.selectedItems()]
+        return [item.text() for item in self.listLoadTypesWidget.selectedItems()]
 
     def get_max_features(self):
         txt = self.maxFeaturesLineEdit.text()

@@ -24,7 +24,7 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 
 from osgeo import gdal
-from qgis.core import QgsVectorLayer
+from qgis.core import QgsVectorLayer, QgsSettings
 
 from .exceptions import KuntaGMLInvalidContentException
 from .utils.sql_utils import get_non_empty_tables
@@ -36,21 +36,56 @@ from ..qgis_plugin_tools.tools.resources import plugin_name
 LOGGER = logging.getLogger(plugin_name())
 
 
+class LoadFromSettings:
+    def __init__(self, by_substring: str = 'qgis/connections-wfs/', suffix: str = '/url') -> None:
+        """Load settings by parsing QgsSettings keys
+
+        :param by_substring: settings substring, defaults to 'qgis/connections-wfs/'
+        :type by_substring: str, optional
+        :param suffix: settings suffix to search for, defaults to '/url'
+        :type suffix: str, optional
+        """
+        self.wfs_urls = {}
+        self.authcfg_id = ''
+        self.load_saved_urls(by_substring, suffix)
+
+    def load_saved_urls(self, by_substring: str, suffix: str):
+        settings = QgsSettings().allKeys()
+        for setting in settings:
+            if setting.find(by_substring) != -1 and setting.find(suffix) != -1:
+                cleaned_name = setting.strip(by_substring).strip(suffix)
+                self.wfs_urls[cleaned_name] = QgsSettings().value(setting)
+
+    def load_authcfg_id(self, cleaned_name: str, suffix: str = '/authcfg'):
+        self.authcfg_id = ''
+        settings = QgsSettings().allKeys()
+        for setting in settings:
+            if setting.find(cleaned_name) != -1 and setting.find(suffix) != -1:
+                self.authcfg_id = QgsSettings().value(setting)
+        if self.authcfg_id:
+            LOGGER.info("authcfg id found for selected item")
+        else:
+            LOGGER.info("no autcfg id found for selected item")
+
+
 class KuntaGML2Layers:
 
-    def __init__(self, url: str, version_common: str, version_gml: str, version_wfs: str, srs=3067):
+    def __init__(self, url: str, version_common: str, version_gml: str, version_wfs: str, srs=3067, authcfg_id: str = ''):
         """
 
         :param url: getCapabilities url
         :param version_common:
         :param version_gml:
         :param version_wfs:
+        :param srs:
+        :param authcfg_id:
         """
         self.url = url.split("?")[0]
         self.version_common = version_common
         self.version_gml = version_gml
         self.version_wfs = version_wfs
         self.srs = srs
+        self.authcfg_id = authcfg_id
         self.feature_types = []
 
     @property
@@ -96,7 +131,7 @@ class KuntaGML2Layers:
         try:
             max_fs = f'maxFeatures={max_features}' if int(self.version_wfs[0]) < 2 else f'count={max_features}'
             url = f'{self.url}?request=GetFeature&service=WFS&srsName={self.srs}&typeName={feature_type}&version={self.version_wfs}&{max_fs}'
-            content = fetch(url)
+            content = fetch(url, authcfg_id=self.authcfg_id)
             content = self._fix_schemalocations(content)
             gml = os.path.join(self.data_dir, f'{feature_type.replace(":", "_")}.gml')
             with open(gml, "w") as f:
